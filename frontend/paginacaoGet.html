@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Produtos</title>
+    <!-- <link rel="stylesheet" href="assets/..."> -->
+</head>
+<body>
+
+    <h2>Lista de Hospitais (Paginação)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>CNPJ</th>
+                <th>Endereço</th>
+                <th>Telefone</th>
+                <th>Email</th>
+                <th>Senha</th>
+            </tr>
+        </thead>
+        <tbody id="hospital-body">
+            <!-- Os dados serão inseridos aqui -->
+        </tbody>
+    </table>
+
+    <div id="nav">
+        <button onclick="anterior()" id="btnAnterior" disabled>Anterior</button>
+        <span id="infoPagina">Página 1</span>
+        <button onclick="proxima()" id="btnProxima">Próxima</button>
+    </div>
+
+    <script type="module" src="js/GET.js"></script>
+</body>
+</html>

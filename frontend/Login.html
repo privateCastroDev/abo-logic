@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="icon" href="img/Bolsa.png">
+    <link rel="stylesheet" href="Login.css">
+</head>
+
+
+<body>
+    <div class="box">
+        <div id="login" class="login">
+            <h1>Login</h1>
+            <form id="formulario" action="">
+                <input type="email" id="email" class="email" name="email" placeholder="E-mail" required>
+                <input type="password" id="senha" class="senha" name="senha" minlength="6" placeholder="Senha" required>
+                <button class="acessar" type="submit">Acessar</button>
+                <a href="Recuperar senha.html"> Recuperar senha </a>
+                <a href="Cadastro.html">Cadastrar instituição</a>
+                <a href="Acessar protocolo.html"> Acessar com Protocolo </a>
+            </form>
+            <button class="cor" onclick="alterarCor('black')">Escuro</button>
+            <button class="cor1" onclick="alterarCor('white')">Claro</button>
+        </div>
+    </div>
+    <script>
+        function alterarCor(cor) {
+            document.body.style.backgroundColor = cor;
+            localStorage.setItem('corDeFundo', cor); // Armazena a cor escolhida
+        }
+        window.onload = function () {
+            const corSalva = localStorage.getItem('corDeFundo');
+            if (corSalva) {
+                document.body.style.backgroundColor = corSalva;
+            }
+        };
+
+        let login = document.getElementById('login');
+        let email = document.getElementById('email');
+        let senha = document.getElementById('senha');
+        login.addEventListener('submit', function (event) {
+            event.preventDefault();
+            if (!email.value.includes('@saude') || !email.value.includes('.com')) {
+                alert('Por favor, insira um email válido!');
+                email.focus();
+                return;
+            }
+            if (!email.value.includes('hospital@saude.com')) {
+                alert('Email não encontrado!.');
+                email.focus();
+                return;
+            }
+            if (!senha.value.includes('098765')) {
+                alert('Senha inválida!');
+                senha;focus();
+                return;
+            }
+
+            // Animação de saída
+            document.body.classList.add('fade-out');
+            setTimeout(() => {
+                window.location.assign("Hospital.html");
+            }, 1000); // Tempo deve coincidir com o CSS
+        });
+    </script>
+</body>
+
+</html>

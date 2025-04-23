@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Minha Tipagem Sanguínea </title>
+    <link rel="icon" href="img/Bolsa.png">
+    <link rel="stylesheet" href="Hospital.css">
+</head>
+
+<div class="container-input">
+    <input id="slider" class="slider" type="range" min="5" max="15" style="display: none;">
+</div>
+
+<body>
+    <div id="div">
+        <div class="div1">
+            <div class="janela1">
+                <div id="conteudo1" class="conteudo1">
+                    <button class="cor" onclick="alterarCor('black')">Escuro</button>
+                    <button class="cor1" onclick="alterarCor('white')">Claro</button>
+                    <a class="conta" href="Conta.html">Conta</a>
+
+                    <h2 class="titulo"> Tipagem sanguínea e fator RH </h2>
+                    <form class="formulario" onsubmit="event.preventDefault(); resultar();">
+                        <input type="text" class="mae" id="mae" name="mae" placeholder="Nome da mãe" required>
+                        <input type="text" class="tipoMae" id="tipoMae" name="tipoMae"
+                            placeholder="Tipo sanguíneo da mãe" required>
+                        <input type="text" class="rhMae" id="rhMae" name="rhMae" placeholder="Fator RH da mãe" required>
+                        <input type="text" class="pai" id="pai" name="pai" placeholder="Nome do pai" required>
+                        <input type="text" class="tipoPai" id="tipoPai" name="tipoPai"
+                            placeholder="Tipo sanguíneo do pai" required>
+                        <input type="text" class="rhPai" id="rhPai" name="rhPai" placeholder="Fator RH do pai" required>
+                        <input type="text" class="crianca" id="crianca" name="crianca" placeholder="Nome da criança">
+                        <button type="submit" class="incluir" id="incluir" name="incluir"> Incluir </button>
+                        <button type="reset" class="reset" id="reset" name="reset"> Limpar </button>
+                    </form><br>
+                    <form id="formulario" class="formulario" onsubmit="event.preventDefault(); resultar();">
+                        <input type="text" class="numProtocol" id="numProtocol" name="numProtocol" minlength="5"
+                            maxlength="15" placeholder="Buscar protocolo" required>
+                        <button type="submit" class="buscar" id="buscar" name="buscar"> Buscar </button>
+                        <button type="reset" class="reset" id="reset" name="reset"> Limpar </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="div2" class="div2">
+            <div class="janela2">
+                <div id="conteudo2" class="conteudo" style="display: none;">
+
+                    <div id="container-protocolo" onclick="copiarProtocolo()" class="container-protocolo hide">
+                        <input id="slider" class="slider" type="range" min="5" max="15">
+                        <a class="title">Protocolo:&nbsp;</a>
+                        <a id="protocolo" class="protocolo"></a>
+                        <a id="tooltip" class="tooltip" style="display: none;">Clique no prococolo para copiar.</a>
+                    </div>
+
+                    <ul id="ul1" class="ul1" class="li11">
+                        <li class="li1">
+                            <p>Parentesco</p>
+                        </li>
+                        <li class="li1">
+                            <p>Nome</p>
+                        </li>
+                        <li class="li1">
+                            <p>Tipo sanguíneo</p>
+                        </li>
+                        <li class="li1">
+                            <p>Fator RH</p>
+                        </li>
+                        <button type="submit" id="salvarIMG" class="salvarIMG"
+                            onclick="gerarProtocolo(); salvar();"><img class="img" src="img/Salvar.png"
+                                width="15px"></button>
+                        <button type="submit" id="salvar" class="salvar" onclick="gerarProtocolo(); salvar();"> <b>
+                                SALVAR </b> </button>
+                        <hr class="hr">
+                        <button type="submit" class="deletarIMG"><img class="img" src="img/Deletar.png"
+                                width="10px"></button>
+                        <button type="submit" class="deletar"> <b> DELETAR </b> </button>
+                        <hr class="hr">
+                        <button type="submit" class="sair"> <b> SAIR </b> </button>
+                    </ul>
+                    <ul class="ul2">
+                        <li class="li2">
+                            <p>Mãe</p>
+                        </li>
+                        <li class="li2">
+                            <p id="mamae"></p>
+                        </li>
+                        <li class="li2">
+                            <p id="tipagemMae"></p>
+                        </li>
+                        <li class="li2">
+                            <p id="fatorRhMae"></p>
+                        </li>
+                    </ul>
+                    <hr>
+                    <ul class="ul2">
+                        <li class="li2">
+                            <p>Pai</p>
+                        </li>
+                        <li class="li2">
+                            <p id="papai"></p>
+                        </li>
+                        <li class="li2">
+                            <p id="tipagemPai"></p>
+                        </li>
+                        <li class="li2">
+                            <p id="fatorRhPai"></p>
+                        </li>
+                    </ul>
+                    <hr>
+                    <ul class="ul2">
+                        <li class="li2">
+                            <p>Filho(a)</p>
+                        </li>
+                        <li class="li2">
+                            <p id="criança"></p>
+                        </li>
+                        <li class="li2">
+                            <p id="tipagemCriança"></p>
+                        </li>
+                        <li class="li2">
+                            <p id="fatorRhCriança"></p>
+                        </li>
+                    </ul>
+
+                    <div id="transfusão" style="display: none;">
+                        <div id="onoff" class="onoff">
+                            <input type="checkbox" class="toggle" id="onoff1">
+                            <label for="onoff1"></label>
+                            <p class="p">Deseja saber para quem poderá fazer ou receber transfusão de sangue?</p>
+                        </div>
+                    </div>
+
+                    <div id="doar" style="display: none;">
+                        <ul id="ul1" class="ul1">
+                            <li class="Tipagem">
+                                <p class="tipo">Tipagem</p>
+                            </li>
+                            <li class="tipagem1">
+                                <p id="doador" class="doador">Para quem pode doar</p>
+                            </li>
+                            <li class="tipagem1">
+                                <p id="doação" class="doação">De quem pode receber</p>
+                            </li>
+                        </ul>
+
+                        <ul id="ul2" class="ul2">
+                            <li class="tipagem2">
+                                <p id="tipo1" class="tipo1"> Se for O+</p>
+                            </li>
+                            <li class="tipagem3">
+                                <p id="doador1" class="doador1">O+</p>
+                            </li>
+                            <li class="tipagem4">
+                                <p id="doação1" class="doação1">O+</p>
+                            </li>
+                        </ul>
+                        <ul id="ul2" class="ul2">
+                            <li class="tipagem2">
+                                <p id="tipo1" class="tipo1">Se for A+</p>
+                            </li>
+                            <li class="tipagem3">
+                                <p id="doador1" class="doador1">A+</p>
+                            </li>
+                            <li class="tipagem4">
+                                <p id="doação1" class="doação1">A+</p>
+                            </li>
+                        </ul>
+                        <ul id="ul2" class="ul2">
+                            <li class="tipagem2">
+                                <p id="tipo1" class="tipo1">Se for B+</p>
+                            </li>
+                            <li class="tipagem3">
+                                <p id="doador1" class="doador1">B+</p>
+                            </li>
+                            <li class="tipagem4">
+                                <p id="doação1" class="doação1">B+</p>
+                            </li>
+                        </ul>
+                        <ul id="ul2" class="ul2">
+                            <li class="tipagem2">
+                                <p id="tipo1" class="tipo1">Se for AB+</p>
+                            </li>
+                            <li class="tipagem3">
+                                <p id="doador1" class="doador1">AB+: A+, A-, B+, B-, AB+, AB-, O+, O-</p>
+                            </li>
+                            <li class="tipagem4">
+                                <p id="doação1" class="doação1">AB+: A+, A-, B+, B-, AB+, AB-, O+, O-</p>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div id="previsao" style="display: none;">
+                        <div id="onoff1" class="onoff1">
+                            <input type="checkbox" class="toggle" id="onoff2">
+                            <label for="onoff2"></label>
+                            <p class="p">Deseja saber também a previsão do parto?</p>
+                        </div>
+                    </div>
+
+                    <form id="partos" style="display: none;">
+                        <ul class="ul1">
+                            <li class="parto">
+                                <label>Dia da última menstruação</label>
+                                <input type="number" min="1" max="31" class="diaMenstruacao" id="diaMenstruacao"
+                                    name="diaMenstruacao" class="diaMenstruacao" required>
+                            </li>
+                            <li class="parto">
+                                <label>Mês da última menstruação</label>
+                                <input type="number" min="1" max="12" class="mesMenstruacao" id="mesMenstruacao"
+                                    name="mesMenstruacao" class="mesMenstruacao" required>
+                            </li>
+                            <li class="parto">
+                                <label>Ano da última menstruação</label>
+                                <input type="number" class="anoMenstruacao" id="anoMenstruacao" name="anoMenstruacao"
+                                    class="anoMenstruacao" required>
+                            </li>
+                            <button type="submit" id="prever" class="prever"> <b class="prever1">PREVER</b></button>
+                        </ul>
+                        <ul class="ul2">
+                            <li>A previsão do parto é para o dia: <b>02/09/2025</b></li>
+                        </ul>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function alterarCor(cor) {
+        document.body.style.backgroundColor = cor;
+        localStorage.setItem('corDeFundo', cor); // Armazena a cor escolhida
+    }
+    window.onload = function () {
+        const corSalva = localStorage.getItem('corDeFundo');
+        if (corSalva) {
+            document.body.style.backgroundColor = corSalva;
+        }
+    };
+
+    function resultar() {
+        let mae = document.getElementById('mae').value;
+        let pai = document.getElementById('pai').value;
+        let crianca = document.getElementById('crianca').value;
+        let tipoMae = document.getElementById('tipoMae').value;
+        let tipoPai = document.getElementById('tipoPai').value;
+        let rhMae = document.getElementById('rhMae').value;
+        let rhPai = document.getElementById('rhPai').value;
+        let mamae = mae;
+        let papai = pai;
+        let criança = crianca;
+        let tipagemMae = tipoMae;
+        let tipagemPai = tipoPai;
+        let fatorRhMae = rhMae;
+        let fatorRhPai = rhPai;
+        document.getElementById('mamae').textContent = mamae;
+        document.getElementById('papai').textContent = papai;
+        document.getElementById('criança').textContent = criança;
+        document.getElementById('tipagemMae').textContent = tipagemMae;
+        document.getElementById('tipagemPai').textContent = tipagemPai;
+        document.getElementById('fatorRhMae').textContent = fatorRhMae;
+        document.getElementById('fatorRhPai').textContent = fatorRhPai;
+        document.getElementById('conteudo2').style.display = 'block'; // block significa bloco de código (instruções)
+        document.getElementById('transfusão').style.display = 'block';
+        document.getElementById('previsao').style.display = 'block';
+    }
+
+    function salvar() {
+        document.getElementById('tooltip').style.display = "block";
+    }
+
+    document.getElementById('onoff1').addEventListener('change', function () { //change serve para alterar o valor de um elemento
+        let doarDiv = document.getElementById('doar');
+
+        if (this.checked) {
+            doarDiv.style.display = 'block';
+        } else {
+            doarDiv.style.display = 'none';
+        }
+    });
+
+    document.getElementById('onoff2').addEventListener('change', function () {
+        let partosDiv = document.getElementById('partos');
+
+        if (this.checked) {
+            partosDiv.style.display = 'block';
+        } else {
+            partosDiv.style.display = 'none';
+        }
+    });
+
+    let sliderElement = document.querySelector("#slider");
+    let buttonElement = document.querySelector("#button");
+
+    let sizeProtocolo = document.querySelector("#valor");
+    let protocolo = document.querySelector("#protocolo");
+
+    let containerProtocolo = document.querySelector("#container-protocolo");
+
+    let charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!';
+    let novoProtocolo = '';
+
+    sizeProtocolo.innerHTML = sliderElement.value;
+
+    slider.oninput = function () {
+        sizeProtocolo.innerHTML = this.value;
+    }
+
+    function gerarProtocolo() {
+
+        let pass = '10013-' + ''; // id + protocolo gerado
+        for (let i = 0, n = charset.length; i < sliderElement.value; ++i) {
+            pass += charset.charAt(Math.floor(Math.random() * n));
+        }
+
+        console.log(pass)
+        containerProtocolo.classList.remove("hide");
+        protocolo.innerHTML = pass;
+        novoProtocolo = pass;
+    }
+
+    function copiarProtocolo() {
+        alert("Protocolo copiado com sucesso!")
+        navigator.clipboard.writeText(novoProtocolo);
+    }
+</script>
+
+</html>

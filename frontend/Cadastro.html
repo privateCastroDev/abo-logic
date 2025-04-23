@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <link rel="icon" href="img/Bolsa.png">
+    <link rel="stylesheet" href="assets/Cadastro.css">
+
+</head>
+
+
+<body>
+    <div class="box">
+        <div id="cadastro" class="cadastro">
+            <h1>Cadastro</h1>
+            <form id="formulario" action="POST">
+                <input type="text" id="nome" placeholder="Nome da institução" required>
+                <input type="text" id="cnpj" minlength="14" maxlength="14" placeholder="CNPJ" required>
+                <input type="text" id="endereco" placeholder="Endereço" required>
+                <input type="text" id="telefone" minlength="11" maxlength="11" placeholder="Telefone da instituição" required>
+                <input type="email" id="email" placeholder="E-mail da instituição" required>
+                <input type="password" id="senha" minlength="6" placeholder="Senha" required>
+                <button class="cadastrar" type="submit">Cadastrar</button> <!-- Button POST HospitalCadastroController -->
+            </form>
+            <button class="cor" onclick="alterarCor('black')">Escuro</button>
+            <button class="cor1" onclick="alterarCor('white')">Claro</button>
+        </div>
+    </div>
+</body>
+<!-- <script>
+    function alterarCor(cor) {
+        document.body.style.backgroundColor = cor;
+        localStorage.setItem('corDeFundo', cor); // Armazena a cor escolhida
+    }
+    window.onload = function () {
+        const corSalva = localStorage.getItem('corDeFundo');
+        if (corSalva) {
+            document.body.style.backgroundColor = corSalva;
+        }
+    };
+
+    function formatarTelefone(telefone) {
+        telefone = telefone.replace(/\D/g, '');
+        telefone = telefone.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '($1) $2 $3-$4');
+        return telefone;
+    }
+    const inputTelefone = document.getElementById('telefone');
+    inputTelefone.addEventListener('input', function () {
+        this.value = formatarTelefone(this.value);
+    });
+
+    function formatarCNPJ(cnpj) {
+        cnpj = cnpj.replace(/\D/g, '');
+        cnpj = cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+        return cnpj;
+    }
+    const inputCNPJ = document.getElementById('cnpj');
+    inputCNPJ.addEventListener('input', function () {
+        this.value = formatarCNPJ(this.value);
+    });
+
+    let formulario = document.getElementById('formulario');
+    let email = document.getElementById('email');
+    formulario.addEventListener('submit', function (event) {
+        event.preventDefault();
+        const cnpj = document.getElementById('cnpj').value.replace(/\D/g, ''); // Remove formatação
+        const telefone = document.getElementById('telefone').value.replace(/\D/g, ''); // Remove formatação
+        if (cnpj.length !== 14) {
+            alert('CNPJ deve ter 14 dígitos');
+            return;
+        }
+        
+        if (telefone.length !== 11) {
+            alert('Telefone deve ter 11 dígitos');
+            return;
+        }
+
+        if (!email.value.includes('.com')) {
+            alert('Por favor, insira um email válido.');
+            email.focus();
+            return;
+        }
+        alert('Cadastro efetuado!');
+
+        // // Animação de saída
+        // document.body.classList.add('fade-out');
+        // setTimeout(() => {
+        //     window.location.assign("Login.html");
+        // }, 1000); // Tempo deve coincidir com o CSS
+    });
+</script> -->
+<script type="module" src="js/POST.js"></script>
+
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo</title>
+    <link rel="icon" href="img/Bolsa.png">
+    <link rel="stylesheet" href="Acessar protocolo.css">
+</head>
+
+
+<body>
+    <div class="box">
+        <div id="formulario" class="formulario">
+            <h1>Protocolo</h1>
+            <form action="">
+                <input type="text" id="protocolo" class="protocolo" name="protocolo" minlength="5" maxlength="15" placeholder="Insira o Protocolo" required>
+                <button class="acessar" type="submit">Acessar</button>
+            </form>
+            <button class="cor" onclick="alterarCor('black')">Escuro</button>
+            <button class="cor1" onclick="alterarCor('white')">Claro</button>
+        </div>
+    </div>
+</body>
+<script>
+    function alterarCor(cor) {
+        document.body.style.backgroundColor = cor;
+        localStorage.setItem('corDeFundo', cor); // Armazena a cor escolhida
+    }
+    window.onload = function () {
+        const corSalva = localStorage.getItem('corDeFundo');
+        if (corSalva) {
+            document.body.style.backgroundColor = corSalva;
+        }
+    };
+
+    let formulario = document.getElementById('formulario');
+    let protocolo = document.getElementById('protocolo');
+    formulario.addEventListener('submit', function (event) {
+        event.preventDefault();
+        if (!protocolo.value.includes('10013-12345')) {
+            alert('protocolo não encontrado!');
+            protocolo.focus();
+            return;
+        }
+
+        // Animação de saída
+        document.body.classList.add('fade-out');
+        setTimeout(() => {
+            window.location.assign("Protocolo.html");
+        }, 1000); // Tempo deve coincidir com o CSS
+    });
+</script>
+
+</html>
