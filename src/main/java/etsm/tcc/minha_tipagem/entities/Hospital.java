@@ -2,16 +2,10 @@ package etsm.tcc.minha_tipagem.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-import java.util.UUID;
-
-@Entity
-@Table(name = "hospital")
-
-@Getter
-@Setter
+@Entity(name = "hospital") // Definindo nome da table
+@Data // Getter, Setter e Constructor
 public class Hospital {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

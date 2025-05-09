@@ -16,7 +16,6 @@ public class HospitalController {
     /* Metodo POST (Criação de um cadastro de um hospital */
     @PostMapping("/criar")
     public Hospital criarHospital(@RequestBody Hospital hospital) {
-
         return hospitalService.criarHospital(hospital);
     }
 
