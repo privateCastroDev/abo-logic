@@ -10,6 +10,7 @@ public interface ConsultaProjection {
     String getNomeCrianca();
     Parentesco getParentesco();
 
+    // Metodo padrão para obter a descrição do parentesco
     default String getParentescoDescricao() {
         return getParentesco() != null ? getParentesco().getDescricao() : null;
     }

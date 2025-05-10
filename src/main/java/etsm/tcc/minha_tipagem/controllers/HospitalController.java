@@ -13,13 +13,13 @@ public class HospitalController {
     @Autowired
     private HospitalService hospitalService;
 
-    /* Metodo POST (Criação de um cadastro de um hospital */
+    // Metodo POST (Criar um novo hospital)
     @PostMapping("/criar")
     public Hospital criarHospital(@RequestBody Hospital hospital) {
         return hospitalService.criarHospital(hospital);
     }
 
-    /* Metodo GET (Recuperar todos os hospitais cadastrados */
+    // Metodo GET (Recuperar todos os hospitais cadastrados
     @GetMapping("/listarTodos")
     public Page<Hospital> getTodosHospitais(
             @RequestParam(defaultValue = "0") int pagina,

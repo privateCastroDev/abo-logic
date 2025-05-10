@@ -13,11 +13,13 @@ public class PacienteController {
     @Autowired
     private PacienteService pacienteService;
 
+    // Metodo POST (Criar um novo paciente)
     @PostMapping("/criar")
     public Paciente criarPaciente(@RequestBody Paciente paciente) {
         return pacienteService.criarPaciente(paciente);
     }
 
+    // Metodo GET (Recuperar TODOS os pacientes cadastrados)
     @GetMapping("/listarTodos")
     public Page<Paciente> getAllPacientes (
             @RequestParam(defaultValue = "0") int pagina,

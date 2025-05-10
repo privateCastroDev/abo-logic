@@ -32,6 +32,7 @@ public class ResponsaveisController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responsaveis);
     }
 
+    // Esse endpoint é para listar os responsáveis cadastrados
     @GetMapping
     public Page<Responsaveis> listarResponsaveis(
             @RequestParam(defaultValue = "0") int pagina,
@@ -39,11 +40,11 @@ public class ResponsaveisController {
         return responsaveisService.listarResponsaveisPaginados(pagina, tamanho);
     }
 
+    // Esse endpoint é para consultar dados completos, de responsáveis, crianças e protocolos
     @GetMapping("/consulta-completa")
     public Page<ConsultaProjection> consultarDadosCompletos(
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "10") int tamanho) {
         return responsaveisService.consultarDadosCompletos(pagina, tamanho);
-        // Esse endpoint é para consultar dados completos, de responsáveis, crianças e protocolos
     }
 }

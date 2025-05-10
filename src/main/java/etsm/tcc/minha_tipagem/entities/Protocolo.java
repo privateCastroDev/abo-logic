@@ -5,8 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
-@Entity
-@Table(name = "protocolo")
+@Entity(name = "protocolo")
 @Data
 public class Protocolo {
 

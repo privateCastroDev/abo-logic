@@ -33,10 +33,6 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	// MapStruct
-	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
-
 	// Database
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
@@ -46,12 +42,9 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-// Configuração específica para MapStruct
-tasks.named('compileJava') {
-	options.compilerArgs = [
-			'-Amapstruct.defaultComponentModel=spring',
-			'-Amapstruct.unmappedTargetPolicy=IGNORE'
-	]
+// Configuração para preservar nomes de parâmetros
+tasks.withType(JavaCompile) {
+	options.compilerArgs += '-parameters'
 }
 
 tasks.named('test') {
