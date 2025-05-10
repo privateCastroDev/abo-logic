@@ -14,40 +14,36 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/responsaveis")
+@RequestMapping("/api/responsaveis")
 public class ResponsaveisController {
 
     @Autowired
     private ResponsaveisService responsaveisService;
 
     /*
-     * Criação completa: responsáveis + paciente + protocolo
-     * Agora retorna um Map<Parentesco, Responsaveis> em vez de Map<String, Responsaveis>
+     * Cadastro completo da família (responsáveis + criança + protocolo)
+     * Recebe o request DTO com todos os dados
+     * Retorna o Mapa com os responsáveis cadastrados
      */
-    @PostMapping("/criarCompleto")
+    @PostMapping
     public ResponseEntity<Map<Parentesco, Responsaveis>> cadastrarFamilia(
-            @RequestBody ConsultaRequest request
-    ) {
+            @RequestBody ConsultaRequest request) {
         Map<Parentesco, Responsaveis> responsaveis = responsaveisService.cadastrarFamilia(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(responsaveis);
     }
 
-     // Lista todos os responsáveis (paginado)
-
-    @GetMapping("/listar")
-    public Page<Responsaveis> getAllResponsaveis(
+    @GetMapping
+    public Page<Responsaveis> listarResponsaveis(
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "10") int tamanho) {
-        return responsaveisService.getAllResponsaveis(pagina, tamanho);
+        return responsaveisService.listarResponsaveisPaginados(pagina, tamanho);
     }
 
-    /*
-     * Consulta completa com dados relacionados (paginado)
-     */
-    @GetMapping("/consultarDados")
-    public Page<ConsultaProjection> consultaCompleta(
+    @GetMapping("/consulta-completa")
+    public Page<ConsultaProjection> consultarDadosCompletos(
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "10") int tamanho) {
-        return responsaveisService.consultaCompleta(pagina, tamanho);
+        return responsaveisService.consultarDadosCompletos(pagina, tamanho);
+        // Esse endpoint é para consultar dados completos, de responsáveis, crianças e protocolos
     }
 }

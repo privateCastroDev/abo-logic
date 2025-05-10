@@ -7,7 +7,7 @@ import lombok.Setter;
 import java.util.List;
 
 public record ConsultaRequest (
-   // Recebe o array do json dos responsaveis, por ex
+   // Recebe uma lista de array json dos responsaveis, por ex
    // [
    // { nome: ...,
    // tipagemSanguinea: ...,

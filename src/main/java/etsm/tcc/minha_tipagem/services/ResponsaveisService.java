@@ -19,6 +19,7 @@ import jakarta.transaction.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -34,25 +35,18 @@ public class ResponsaveisService {
     @Autowired
     private PacienteRepository pacienteRepository;
 
-    /*
-     * Cadastro completo da família (responsáveis + criança + protocolo)
-     * Recebe o request DTO com todos os dados
-     * Retorna o Mapa com os responsáveis cadastrados
-     */
+
     public Map<Parentesco, Responsaveis> cadastrarFamilia(ConsultaRequest request) {
         Map<Parentesco, Responsaveis> responsaveis = new HashMap<>();
 
-        // Cadastra todos os responsáveis
         for (ResponsaveisRequest responsavelRequest : request.responsaveis()) {
-            Responsaveis responsavel = criarResponsavel(
-                    responsavelRequest.nome(),
-                    responsavelRequest.tipagemSanguinea(),
-                    responsavelRequest.parentesco()
-            );
-            responsaveis.put(responsavelRequest.parentesco(), responsavel);
+            Responsaveis responsavel = new Responsaveis();
+            responsavel.setNome(responsavelRequest.nome());
+            responsavel.setTipagemSanguinea(responsavelRequest.tipagemSanguinea());
+            responsavel.setParentesco(responsavelRequest.parentesco());
+            responsaveis.put(responsavelRequest.parentesco(), responsaveisRepository.save(responsavel));
         }
 
-        // Cria paciente e protocolo (apenas se houver pelo menos 1 responsável)
         if (!responsaveis.isEmpty()) {
             criarVinculos(request, responsaveis);
         }
@@ -60,53 +54,50 @@ public class ResponsaveisService {
         return responsaveis;
     }
 
-    private Responsaveis criarResponsavel(String nome, String tipagem, Parentesco parentesco) {
-        Responsaveis responsavel = new Responsaveis();
-        responsavel.setNome(nome);
-        responsavel.setTipagemSanguinea(tipagem);
-        responsavel.setParentesco(parentesco);
-        return responsaveisRepository.save(responsavel);
+    private void criarVinculos(ConsultaRequest request, Map<Parentesco, Responsaveis> responsaveis) {
+        Paciente paciente = criarESalvarPaciente(request, responsaveis);
+        criarESalvarProtocolo(paciente, responsaveis);
     }
 
-    private void criarVinculos(ConsultaRequest request, Map<Parentesco, Responsaveis> responsaveis) {
-        // Cria o paciente
+    private Paciente criarESalvarPaciente(ConsultaRequest request, Map<Parentesco, Responsaveis> responsaveis) {
         Paciente paciente = new Paciente();
         paciente.setNomeCrianca(request.nomeCrianca());
+        atribuirResponsaveisAoPaciente(paciente, responsaveis);
+        return pacienteRepository.save(paciente);
+    }
 
-        // Define os responsáveis
-        if (responsaveis.containsKey(Parentesco.MAE)) {
-            paciente.setResponsavel1(responsaveis.get(Parentesco.MAE));
-            if (responsaveis.containsKey(Parentesco.PAI)) {
-                paciente.setResponsavel2(responsaveis.get(Parentesco.PAI));
-            }
-        }
-        pacienteRepository.save(paciente);
-
-        // Cria o protocolo com número gerado automaticamente
+    private Protocolo criarESalvarProtocolo(Paciente paciente, Map<Parentesco, Responsaveis> responsaveis) {
         Protocolo protocolo = new Protocolo();
         protocolo.setNumeroProtocolo(gerarNumeroProtocolo());
         protocolo.setPaciente(paciente);
-
-        // Vincula os mesmos responsáveis do paciente
-        if (responsaveis.containsKey(Parentesco.MAE)) {
-            protocolo.setResponsavel1(responsaveis.get(Parentesco.MAE));
-            if (responsaveis.containsKey(Parentesco.PAI)) {
-                protocolo.setResponsavel2(responsaveis.get(Parentesco.PAI));
-            }
-        }
-        protocoloRepository.save(protocolo);
+        atribuirResponsaveisAoProtocolo(protocolo, responsaveis);
+        return protocoloRepository.save(protocolo);
     }
 
     private String gerarNumeroProtocolo() {
         return "PROT-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
-    public Page<Responsaveis> getAllResponsaveis(int pagina, int tamanho) {
+    private void atribuirResponsaveisAoPaciente(Paciente paciente, Map<Parentesco, Responsaveis> responsaveis) {
+        Optional.ofNullable(responsaveis.get(Parentesco.MAE))
+                .ifPresent(paciente::setResponsavel1);
+        Optional.ofNullable(responsaveis.get(Parentesco.PAI))
+                .ifPresent(paciente::setResponsavel2);
+    }
+
+    private void atribuirResponsaveisAoProtocolo(Protocolo protocolo, Map<Parentesco, Responsaveis> responsaveis) {
+        Optional.ofNullable(responsaveis.get(Parentesco.MAE))
+                .ifPresent(protocolo::setResponsavel1);
+        Optional.ofNullable(responsaveis.get(Parentesco.PAI))
+                .ifPresent(protocolo::setResponsavel2);
+    }
+
+    public Page<Responsaveis> listarResponsaveisPaginados(int pagina, int tamanho) {
         Pageable pageable = PageRequest.of(pagina, tamanho);
         return responsaveisRepository.findAll(pageable);
     }
 
-    public Page<ConsultaProjection> consultaCompleta(int pagina, int tamanho) {
+    public Page<ConsultaProjection> consultarDadosCompletos(int pagina, int tamanho) {
         Pageable pageable = PageRequest.of(pagina, tamanho);
         return responsaveisRepository.consultarDados(pageable);
     }

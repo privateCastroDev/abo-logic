@@ -1,5 +1,6 @@
 package etsm.tcc.minha_tipagem.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import etsm.tcc.minha_tipagem.enums.Parentesco;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -10,12 +11,6 @@ import java.util.List;
 @Entity(name = "responsaveis")
 @Data // Getter, Setter e Constructor
 public class Responsaveis {
-
-    @OneToMany(mappedBy = "responsavel1", cascade = CascadeType.ALL)
-    private List<Protocolo> protocolosResponsavel1;
-
-    @OneToMany(mappedBy = "responsavel2", cascade = CascadeType.ALL)
-    private List<Protocolo> protocolosResponsavel2;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +25,22 @@ public class Responsaveis {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Parentesco parentesco; // Enum para definir se o responsável é pai ou mãe
+    private Parentesco parentesco; // ENUM que define se é pai ou mãe
+
+    @OneToMany(mappedBy = "responsavel1", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonBackReference("protocolo-responsavel1")
+    private List<Protocolo> protocolosResponsavel1;
+
+    @OneToMany(mappedBy = "responsavel2", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonBackReference("protocolo-responsavel2") // Evita serialização infinita
+    private List<Protocolo> protocolosResponsavel2;
+
+    @OneToMany(mappedBy = "responsavel1", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonBackReference("paciente-responsavel1")
+    private List<Paciente> pacientesResponsavel1;
+
+    @OneToMany(mappedBy = "responsavel2", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonBackReference("paciente-responsavel2")
+    private List<Paciente> pacientesResponsavel2;
 
 }

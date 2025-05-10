@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ResponsaveisRepository extends JpaRepository<Responsaveis, Long> {
 
-
     @Query(value = """
     SELECT r.id AS id, r.nome AS nome, r.parentesco AS parentesco, p.nome_crianca AS nomeCrianca
     FROM responsaveis r
