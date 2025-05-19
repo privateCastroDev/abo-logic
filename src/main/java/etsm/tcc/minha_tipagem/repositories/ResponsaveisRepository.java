@@ -12,9 +12,8 @@ import org.springframework.stereotype.Repository;
 public interface ResponsaveisRepository extends JpaRepository<Responsaveis, Long> {
 
     @Query(value = """
-    SELECT 
-        r.id AS responsavelId, r.nome AS nomeResponsavel, r.tipagem_sanguinea AS tipagem, prot.numero_protocolo AS numeroProtocolo,
-        p.nome_crianca AS nomeCrianca, r.parentesco AS parentesco
+    SELECT r.id AS responsavelId, r.nome AS nomeResponsavel, r.tipagem_sanguinea AS tipagem, prot.numero_protocolo AS numeroProtocolo,
+    p.nome_crianca AS nomeCrianca, r.parentesco AS parentesco
     FROM responsaveis r
     LEFT JOIN paciente p ON (p.responsavel1_id = r.id OR p.responsavel2_id = r.id)
     LEFT JOIN protocolo prot ON prot.paciente_id = p.id

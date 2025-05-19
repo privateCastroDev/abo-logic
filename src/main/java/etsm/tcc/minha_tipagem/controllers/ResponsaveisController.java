@@ -1,6 +1,7 @@
 package etsm.tcc.minha_tipagem.controllers;
 
 import etsm.tcc.minha_tipagem.dtos.requests.ConsultaRequest;
+import etsm.tcc.minha_tipagem.dtos.requests.ResponsaveisRequest;
 import etsm.tcc.minha_tipagem.entities.Responsaveis;
 import etsm.tcc.minha_tipagem.enums.Parentesco;
 import etsm.tcc.minha_tipagem.projections.ConsultaProjection;
@@ -11,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -46,5 +49,17 @@ public class ResponsaveisController {
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "10") int tamanho) {
         return responsaveisService.consultarDadosCompletos(pagina, tamanho);
+    }
+
+    @PostMapping("/calcular-tipagem")
+    public ResponseEntity<Map<String, List<String>>> calcularTipagemFilho(
+            @RequestBody List<ResponsaveisRequest> responsaveis) {
+
+        String tipagemMae = responsaveis.get(0).tipagemSanguinea();
+        String tipagemPai = responsaveis.get(1).tipagemSanguinea();
+
+        Map<String, List<String>> resultado = responsaveisService.calcularTipagemFilho(tipagemMae, tipagemPai);
+
+        return ResponseEntity.ok(resultado);
     }
 }

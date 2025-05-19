@@ -17,12 +17,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
+// https://www.geeksforgeeks.org/spring-boot-transaction-management-using-transactional-annotation/
 @Transactional
 public class ResponsaveisService {
 
@@ -91,6 +89,78 @@ public class ResponsaveisService {
         Optional.ofNullable(responsaveis.get(Parentesco.PAI))
                 .ifPresent(protocolo::setResponsavel2);
     }
+
+    public Map<String, List<String>> calcularTipagemFilho(String tipagemMae, String tipagemPai) {
+
+        // Converter para uppercase e remover espaços
+        tipagemMae = tipagemMae.toUpperCase().trim();
+        tipagemPai = tipagemPai.toUpperCase().trim();
+
+        // Extrair grupo sanguíneo (A, B, AB, O) e Rh (+/-)
+        String grupoMae = tipagemMae.substring(0, tipagemMae.length() - 1);
+        String rhMae = tipagemMae.substring(tipagemMae.length() - 1);
+
+        String grupoPai = tipagemPai.substring(0, tipagemPai.length() - 1);
+        String rhPai = tipagemPai.substring(tipagemPai.length() - 1);
+
+        // Calcular possível grupo sanguíneo do filho
+        List<String> grupoFilho = calcularGrupoSanguineo(grupoMae, grupoPai);
+
+        // Calcular possível fator RH do filho
+        List<String> rhFilho = calcularFatorRh(rhMae, rhPai);
+
+        // Combina os dois resultados em uma nova lista
+        Map<String, List<String>> newTipagemFilho = new HashMap<>();
+        newTipagemFilho.put("tipagemFilho", grupoFilho);
+        newTipagemFilho.put("rh", rhFilho);
+
+        return newTipagemFilho;
+    }
+
+    private List<String> calcularGrupoSanguineo(String grupoMae, String grupoPai) {
+        // Implementação das leis de Mendel para grupos sanguíneos
+        if (grupoMae.equals("O") && grupoPai.equals("O")) {
+            return List.of("100% O");
+        } else if (grupoMae.equals("A") && grupoPai.equals("A")) {
+            return List.of("75% A", "25% O");
+        } else if (grupoMae.equals("B") && grupoPai.equals("B")) {
+            return List.of("75% B", "25% O");
+        } else if ((grupoMae.equals("A") && grupoPai.equals("B")) ||
+                (grupoMae.equals("B") && grupoPai.equals("A"))) {
+            return List.of("25% A", "25% B", "25% AB", "25% O");
+        } else if ((grupoMae.equals("A") && grupoPai.equals("O")) ||
+                (grupoMae.equals("O") && grupoPai.equals("A"))) {
+            return List.of("50% A", "50% O");
+        } else if ((grupoMae.equals("B") && grupoPai.equals("O")) ||
+                (grupoMae.equals("O") && grupoPai.equals("B"))) {
+            return List.of("50% B", "50% O");
+        } else if (grupoMae.equals("AB") && grupoPai.equals("AB")) {
+            return List.of("50% AB", "25% A", "25% B");
+        } else if ((grupoMae.equals("AB") && grupoPai.equals("O")) ||
+                (grupoMae.equals("O") && grupoPai.equals("AB"))) {
+            return List.of("50% A", "50% B");
+        } else if ((grupoMae.equals("AB") && grupoPai.equals("A")) ||
+                (grupoMae.equals("A") && grupoPai.equals("AB"))) {
+            return List.of("50% A", "25% B", "25% AB");
+        } else if ((grupoMae.equals("AB") && grupoPai.equals("B")) ||
+                (grupoMae.equals("B") && grupoPai.equals("AB"))) {
+            return List.of("50% B", "25% A", "25% AB");
+        } else {
+            return List.of("Erro, tipagem não encontrada!");
+        }
+    }
+
+    private List<String> calcularFatorRh(String rhMae, String rhPai) {
+        // Rh+ é dominante, Rh- é recessivo
+        if (rhMae.equals("-") && rhPai.equals("-")) {
+            return List.of("-");
+        } else if (rhMae.equals("+") && rhPai.equals("-") ||
+                   rhMae.equals("-") && rhPai.equals("+")) {
+            return List.of("50% +", "50% -");
+        }
+        return List.of("75% +", "25% -");
+    }
+
 
     public Page<Responsaveis> listarResponsaveisPaginados(int pagina, int tamanho) {
         Pageable pageable = PageRequest.of(pagina, tamanho);

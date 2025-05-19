@@ -16,5 +16,6 @@ public record ConsultaRequest (
    List <ResponsaveisRequest> responsaveis,
 
    String nomeCrianca
+
 ) {
 }

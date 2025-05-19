@@ -1,4 +1,4 @@
-package etsm.tcc.minha_tipagem.entities;
+    package etsm.tcc.minha_tipagem.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -20,6 +20,10 @@ public class Paciente {
     @Size(max = 150)
     @Column(name = "nome_crianca") // Nome da criança
     private String nomeCrianca;
+
+    @Size(max = 3)
+    @Column(name = "tipagem_sanguinea") // Tipagem sanguínea da criança
+    private String tipagemSanguinea;
 
     @ManyToOne
     @JsonManagedReference("paciente-responsavel1")
