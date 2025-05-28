@@ -1,10 +1,14 @@
 package etsm.tcc.minha_tipagem.controllers;
 
 import etsm.tcc.minha_tipagem.dtos.requests.ConsultaRequest;
-import etsm.tcc.minha_tipagem.dtos.requests.ResponsaveisRequest;
+import etsm.tcc.minha_tipagem.dtos.requests.ExameRequest;
+import etsm.tcc.minha_tipagem.dtos.requests.ResponsavelRequest;
+import etsm.tcc.minha_tipagem.dtos.responses.ProtocoloConsultaResponse;
+import etsm.tcc.minha_tipagem.entities.Paciente;
 import etsm.tcc.minha_tipagem.entities.Responsaveis;
 import etsm.tcc.minha_tipagem.enums.Parentesco;
 import etsm.tcc.minha_tipagem.projections.ConsultaProjection;
+import etsm.tcc.minha_tipagem.services.PacienteService;
 import etsm.tcc.minha_tipagem.services.ResponsaveisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +26,9 @@ public class ResponsaveisController {
 
     @Autowired
     private ResponsaveisService responsaveisService;
+
+    @Autowired
+    private PacienteService pacienteService;
 
     /*
      * Cadastro completo da família (responsáveis + criança + protocolo)
@@ -53,7 +60,7 @@ public class ResponsaveisController {
 
     @PostMapping("/calcular-tipagem")
     public ResponseEntity<Map<String, List<String>>> calcularTipagemFilho(
-            @RequestBody List<ResponsaveisRequest> responsaveis) {
+            @RequestBody List<ResponsavelRequest> responsaveis) {
 
         String tipagemMae = responsaveis.get(0).tipagemSanguinea();
         String tipagemPai = responsaveis.get(1).tipagemSanguinea();
@@ -61,5 +68,11 @@ public class ResponsaveisController {
         Map<String, List<String>> resultado = responsaveisService.calcularTipagemFilho(tipagemMae, tipagemPai);
 
         return ResponseEntity.ok(resultado);
+    }
+
+    @PostMapping("/salvar-exame")
+    public ResponseEntity<ProtocoloConsultaResponse> salvarExame(@RequestBody ConsultaRequest request) {
+        ProtocoloConsultaResponse response = responsaveisService.salvarExame(request);
+        return ResponseEntity.ok(response);
     }
 }

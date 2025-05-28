@@ -1,9 +1,11 @@
 package etsm.tcc.minha_tipagem.controllers;
 
+import etsm.tcc.minha_tipagem.dtos.requests.ExameRequest;
 import etsm.tcc.minha_tipagem.entities.Paciente;
 import etsm.tcc.minha_tipagem.services.PacienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

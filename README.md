@@ -1,4 +1,4 @@
-# Projeto TCC - Tipagem Sanguínea
+# ABO - Logic
 
 ## Descrição
 
@@ -75,48 +75,83 @@ O sistema será capaz de:
 
 ## Endpoints da API
 
-### `POST /api/pais/cadastrar`
-Cadastra as tipagens sanguíneas dos pais.
+### 🏥 Hospital
+
+#### `POST /hospital/criar`
+
+Cria um hospital com nome, CNPJ, e-mail, telefone, endereço e senha.
+
+#### `GET /hospital/listarTodos`
+
+Lista todos os hospitais cadastrados com paginação opcional.
+
+---
+
+### 👶 Paciente
+
+#### `POST /pacientes/criar`
+
+Cadastra um novo paciente.
+
+#### `GET /pacientes/listarTodos`
+
+Lista todos os pacientes com suporte a paginação.
+
+---
+
+### 📄 Protocolo
+
+#### `POST /protocolos/salvar`
+
+Cria ou atualiza um protocolo médico para um paciente.
+
+#### `GET /protocolos/listar`
+
+Retorna todos os protocolos cadastrados com paginação.
+
+---
+
+### 👨‍👩‍👧 Responsáveis e Consulta
+
+#### `POST /api/responsaveis`
+
+Cadastra um conjunto de responsáveis (pai e mãe), filho e protocolo.
+
+#### `GET /api/responsaveis`
+
+Lista os responsáveis cadastrados com paginação.
+
+#### `GET /api/responsaveis/consulta-completa`
+
+Retorna dados completos da família (pais, filhos, protocolos).
+
+#### `POST /api/responsaveis/calcular-tipagem`
+
+Calcula a tipagem sanguínea do filho com base nas informações dos pais.
 
 **Request**:
+
 ```json
-{
-  "paiTipagem": "A",
-  "maeTipagem": "B"
-}
+[
+  {
+    "nome": "Maria",
+    "tipagem": "A",
+    "fatorRh": "+"
+  },
+  {
+    "nome": "José",
+    "tipagem": "O",
+    "fatorRh": "-"
+  }
+]
 ```
 
 **Response**:
+
 ```json
 {
-  "filhoTipagem": "AB"
-}
-```
-
-### `GET /api/pais/compatibilidade`
-Verifica a compatibilidade sanguínea entre os pais e o filho.
-
-**Response**:
-```json
-{
-  "compatibilidade": "Compatível"
-}
-```
-
-### `GET /api/pais/dataPrevistaParto`
-Calcula a data prevista para o parto com base na data da última menstruação da mãe.
-
-**Request**:
-```json
-{
-  "ultimaMenstruacao": "2024-08-01"
-}
-```
-
-**Response**:
-```json
-{
-  "dataPrevistaParto": "2025-05-08"
+  "tipagemProvavel": ["A", "O"],
+  "fatorRhProvavel": ["+", "-"]
 }
 ```
 

@@ -1,5 +1,8 @@
 package etsm.tcc.minha_tipagem.controllers;
 
+import etsm.tcc.minha_tipagem.dtos.responses.ProtocoloConsultaResponse;
+import etsm.tcc.minha_tipagem.dtos.responses.ProtocoloResponse;
+import etsm.tcc.minha_tipagem.dtos.responses.ResponsaveisResponse;
 import etsm.tcc.minha_tipagem.entities.Protocolo;
 import etsm.tcc.minha_tipagem.services.ProtocoloService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/protocolos")
+@RequestMapping("/api/protocolos")
 public class ProtocoloController {
 
     @Autowired
@@ -30,4 +33,9 @@ public class ProtocoloController {
         return protocoloService.getAllProtocolos(pagina, tamanho);
     }
 
+    @GetMapping("/buscar")
+    public ResponseEntity<ProtocoloConsultaResponse> buscarPorProtocolo(@RequestParam String protocolo) {
+        ProtocoloConsultaResponse response = protocoloService.buscarPorProtocolo(protocolo);
+        return ResponseEntity.ok(response);
+    }
 }

@@ -1,11 +1,12 @@
 package etsm.tcc.minha_tipagem.services;
 
+import etsm.tcc.minha_tipagem.dtos.responses.ProtocoloConsultaResponse;
 import etsm.tcc.minha_tipagem.entities.Responsaveis;
 import etsm.tcc.minha_tipagem.entities.Protocolo;
 import etsm.tcc.minha_tipagem.entities.Paciente;
 import etsm.tcc.minha_tipagem.enums.Parentesco;
 import etsm.tcc.minha_tipagem.dtos.requests.ConsultaRequest;
-import etsm.tcc.minha_tipagem.dtos.requests.ResponsaveisRequest;
+import etsm.tcc.minha_tipagem.dtos.requests.ResponsavelRequest;
 import etsm.tcc.minha_tipagem.projections.ConsultaProjection;
 import etsm.tcc.minha_tipagem.repositories.ResponsaveisRepository;
 import etsm.tcc.minha_tipagem.repositories.ProtocoloRepository;
@@ -20,7 +21,6 @@ import jakarta.transaction.Transactional;
 import java.util.*;
 
 @Service
-// https://www.geeksforgeeks.org/spring-boot-transaction-management-using-transactional-annotation/
 @Transactional
 public class ResponsaveisService {
 
@@ -33,33 +33,61 @@ public class ResponsaveisService {
     @Autowired
     private PacienteRepository pacienteRepository;
 
-
+    // Corrigido: Apenas cadastra responsáveis (não cria paciente/protocolo aqui)
     public Map<Parentesco, Responsaveis> cadastrarFamilia(ConsultaRequest request) {
         Map<Parentesco, Responsaveis> responsaveis = new HashMap<>();
 
-        for (ResponsaveisRequest responsavelRequest : request.responsaveis()) {
-            Responsaveis responsavel = new Responsaveis();
-            responsavel.setNome(responsavelRequest.nome());
-            responsavel.setTipagemSanguinea(responsavelRequest.tipagemSanguinea());
-            responsavel.setParentesco(responsavelRequest.parentesco());
-            responsaveis.put(responsavelRequest.parentesco(), responsaveisRepository.save(responsavel));
-        }
-
-        if (!responsaveis.isEmpty()) {
-            criarVinculos(request, responsaveis);
+        if (request.responsaveis() != null && !request.responsaveis().isEmpty()) {
+            for (ResponsavelRequest responsavelRequest : request.responsaveis()) {
+                Responsaveis responsavel = new Responsaveis();
+                responsavel.setNome(responsavelRequest.nome());
+                responsavel.setTipagemSanguinea(responsavelRequest.tipagemSanguinea());
+                responsavel.setParentesco(responsavelRequest.parentesco());
+                responsaveis.put(responsavelRequest.parentesco(), responsaveisRepository.save(responsavel));
+            }
         }
 
         return responsaveis;
     }
 
-    private void criarVinculos(ConsultaRequest request, Map<Parentesco, Responsaveis> responsaveis) {
-        Paciente paciente = criarESalvarPaciente(request, responsaveis);
-        criarESalvarProtocolo(paciente, responsaveis);
+    // Lógica de criação de paciente e protocolo fica apenas aqui!
+    public ProtocoloConsultaResponse salvarExame(ConsultaRequest request) {
+        // 1. Cadastra a família (responsáveis)
+        Map<Parentesco, Responsaveis> responsaveis = cadastrarFamilia(request);
+
+        // 2. Pega as tipagens da mãe e do pai
+        String tipagemMae = responsaveis.get(Parentesco.MAE) != null ? responsaveis.get(Parentesco.MAE).getTipagemSanguinea() : null;
+        String tipagemPai = responsaveis.get(Parentesco.PAI) != null ? responsaveis.get(Parentesco.PAI).getTipagemSanguinea() : null;
+
+        // 3. Calcula possíveis tipagens do filho
+        Map<String, List<String>> resultadosFilho = calcularTipagemFilho(tipagemMae, tipagemPai);
+        String grupos = String.join(", ", resultadosFilho.getOrDefault("tipagemFilho", List.of("Desconhecido")));
+        String rhs = String.join(", ", resultadosFilho.getOrDefault("rh", List.of("Desconhecido")));
+
+        // 4. Cria e salva o paciente com os novos campos
+        Paciente paciente = criarESalvarPaciente(request, responsaveis, grupos, rhs);
+
+        // 5. Cria e salva o protocolo vinculado ao paciente e retorna o objeto salvo
+        Protocolo protocolo = criarESalvarProtocolo(paciente, responsaveis);
+
+        // 6. Monta e retorna a resposta
+        return new ProtocoloConsultaResponse(
+                protocolo.getNumeroProtocolo(),
+                paciente.getNomeCrianca(),
+                grupos, // Tipagem sanguínea do filho
+                rhs,    // Fator Rh do filho
+                responsaveis.get(Parentesco.MAE) != null ? responsaveis.get(Parentesco.MAE).getNome() : "",
+                responsaveis.get(Parentesco.MAE) != null ? responsaveis.get(Parentesco.MAE).getTipagemSanguinea() : "",
+                responsaveis.get(Parentesco.PAI) != null ? responsaveis.get(Parentesco.PAI).getNome() : "",
+                responsaveis.get(Parentesco.PAI) != null ? responsaveis.get(Parentesco.PAI).getTipagemSanguinea() : ""
+        );
     }
 
-    private Paciente criarESalvarPaciente(ConsultaRequest request, Map<Parentesco, Responsaveis> responsaveis) {
+    private Paciente criarESalvarPaciente(ConsultaRequest request, Map<Parentesco, Responsaveis> responsaveis, String grupos, String rhs) {
         Paciente paciente = new Paciente();
         paciente.setNomeCrianca(request.nomeCrianca());
+        paciente.setTipagemSanguineaFilho(grupos); // Preenche o campo novo
+        paciente.setFatorRhFilho(rhs);             // Preenche o campo novo
         atribuirResponsaveisAoPaciente(paciente, responsaveis);
         return pacienteRepository.save(paciente);
     }
@@ -72,7 +100,7 @@ public class ResponsaveisService {
         return protocoloRepository.save(protocolo);
     }
 
-    private String gerarNumeroProtocolo() {
+    public String gerarNumeroProtocolo() {
         return "PROT-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
@@ -91,25 +119,18 @@ public class ResponsaveisService {
     }
 
     public Map<String, List<String>> calcularTipagemFilho(String tipagemMae, String tipagemPai) {
-
-        // Converter para uppercase e remover espaços
         tipagemMae = tipagemMae.toUpperCase().trim();
         tipagemPai = tipagemPai.toUpperCase().trim();
 
-        // Extrair grupo sanguíneo (A, B, AB, O) e Rh (+/-)
         String grupoMae = tipagemMae.substring(0, tipagemMae.length() - 1);
         String rhMae = tipagemMae.substring(tipagemMae.length() - 1);
 
         String grupoPai = tipagemPai.substring(0, tipagemPai.length() - 1);
         String rhPai = tipagemPai.substring(tipagemPai.length() - 1);
 
-        // Calcular possível grupo sanguíneo do filho
         List<String> grupoFilho = calcularGrupoSanguineo(grupoMae, grupoPai);
-
-        // Calcular possível fator RH do filho
         List<String> rhFilho = calcularFatorRh(rhMae, rhPai);
 
-        // Combina os dois resultados em uma nova lista
         Map<String, List<String>> newTipagemFilho = new HashMap<>();
         newTipagemFilho.put("tipagemFilho", grupoFilho);
         newTipagemFilho.put("rh", rhFilho);
@@ -118,7 +139,6 @@ public class ResponsaveisService {
     }
 
     private List<String> calcularGrupoSanguineo(String grupoMae, String grupoPai) {
-        // Implementação das leis de Mendel para grupos sanguíneos
         if (grupoMae.equals("O") && grupoPai.equals("O")) {
             return List.of("100% O");
         } else if (grupoMae.equals("A") && grupoPai.equals("A")) {
@@ -151,16 +171,14 @@ public class ResponsaveisService {
     }
 
     private List<String> calcularFatorRh(String rhMae, String rhPai) {
-        // Rh+ é dominante, Rh- é recessivo
         if (rhMae.equals("-") && rhPai.equals("-")) {
             return List.of("-");
         } else if (rhMae.equals("+") && rhPai.equals("-") ||
-                   rhMae.equals("-") && rhPai.equals("+")) {
+                rhMae.equals("-") && rhPai.equals("+")) {
             return List.of("50% +", "50% -");
         }
         return List.of("75% +", "25% -");
     }
-
 
     public Page<Responsaveis> listarResponsaveisPaginados(int pagina, int tamanho) {
         Pageable pageable = PageRequest.of(pagina, tamanho);
@@ -170,5 +188,10 @@ public class ResponsaveisService {
     public Page<ConsultaProjection> consultarDadosCompletos(int pagina, int tamanho) {
         Pageable pageable = PageRequest.of(pagina, tamanho);
         return responsaveisRepository.consultarDados(pageable);
+    }
+
+    public Responsaveis buscarPorId(Long id) {
+        return responsaveisRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Responsável não encontrado com ID: " + id));
     }
 }

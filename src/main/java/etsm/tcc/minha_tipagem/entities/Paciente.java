@@ -21,9 +21,11 @@ public class Paciente {
     @Column(name = "nome_crianca") // Nome da criança
     private String nomeCrianca;
 
-    @Size(max = 3)
-    @Column(name = "tipagem_sanguinea") // Tipagem sanguínea da criança
-    private String tipagemSanguinea;
+    @Column(name = "tipagem_sanguinea", columnDefinition = "TEXT") // Tipagem sanguínea da criança
+    private String tipagemSanguineaFilho;
+
+    @Column(name = "fator-rh", columnDefinition = "TEXT") // Fator RH da criança
+    private String fatorRhFilho;
 
     @ManyToOne
     @JsonManagedReference("paciente-responsavel1")
@@ -38,4 +40,5 @@ public class Paciente {
     @OneToMany(mappedBy = "paciente", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonBackReference("protocolo-paciente")
     private List<Protocolo> protocolos; // Lista de protocolos associados ao paciente
+
 }
